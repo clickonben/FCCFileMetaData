@@ -1,6 +1,7 @@
 const express = require('express');
 const multer  = require('multer');
 const cors = require('cors');
+const fs = require('fs');
 const upload = multer({ dest: 'uploads/' })
 require('dotenv').config()
 
@@ -20,10 +21,17 @@ app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
     type: file.mimetype,
     size: file.size
   }
+
+  fs.unlink(file.path, (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+  
+    console.log('File deleted successfully');
+  });
   res.json(retVal);  
 });
-
-
 
 const port = process.env.PORT || 3000;
 app.listen(port, function () {
