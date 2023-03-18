@@ -15,8 +15,9 @@ app.get('/', function (req, res) {
 });
 
 app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
-  const file = req.file;
-  const retVal = {
+  try {
+    const file = req.file;
+    const fileInfo = {
     name: file.originalname,
     type: file.mimetype,
     size: file.size
@@ -30,7 +31,18 @@ app.post('/api/fileanalyse', upload.single('upfile'), (req, res) => {
   
     console.log('File deleted successfully');
   });
-  res.json(retVal);  
+
+  res.json(fileInfo);  
+    
+  } catch (err) {
+    console.error(err.stack);
+    if(process?.env?.ENVIRONMENT === 'DEV') {
+      res.status(500).send(err.stack);
+    }
+    else {
+      res.status(500).send("Server Error");
+    }
+  }  
 });
 
 const port = process.env.PORT || 3000;
